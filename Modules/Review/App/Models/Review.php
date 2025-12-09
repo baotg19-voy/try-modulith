@@ -4,6 +4,7 @@ namespace Modules\Review\App\Models;
 
 use MongoDB\Laravel\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Review\Database\Factories\ReviewFactory;
 
 class Review extends Model
 {
@@ -19,5 +20,10 @@ class Review extends Model
         'author_name',
         'rating',
         'comment'
-    ];   
+    ];
+
+    protected static function newFactory(): ReviewFactory
+    {
+        return ReviewFactory::new();
+    }
 }

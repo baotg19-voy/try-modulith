@@ -3,16 +3,15 @@
 namespace Modules\Review\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Modules\Review\App\Models\Review;
 
-class ReviewDatabaseSeeder extends Seeder
+class ReviewSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        $this->call([
-            ReviewSeeder::class
-        ]);
+        Review::factory()->count(8)->create();
     }
 }
