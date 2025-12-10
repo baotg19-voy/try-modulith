@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\Review\Database\Seeders;
+namespace Modules\Product\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Modules\Review\App\Models\Review;
+use Modules\Product\App\Models\Review;
 
 class ReviewSeeder extends Seeder
 {

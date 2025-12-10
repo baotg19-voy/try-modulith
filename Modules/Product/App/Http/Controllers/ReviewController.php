@@ -1,12 +1,12 @@
 <?php
 
-namespace Modules\Review\App\Http\Controllers;
+namespace Modules\Product\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Modules\Product\App\Models\Product;
-use Modules\Review\App\Models\Review;
+use Modules\Product\App\Models\Review;
 
 class ReviewController extends Controller
 {
@@ -24,7 +24,7 @@ class ReviewController extends Controller
         // Fetch products from MySQL database
         $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
         
-        return view('review::index', compact('reviews', 'products'));
+        return view('product::reviews.index', compact('reviews', 'products'));
     }
 
     /**
@@ -33,7 +33,7 @@ class ReviewController extends Controller
     public function create()
     {
         $products = Product::all();
-        return view('review::create', compact('products'));
+        return view('product::reviews.create', compact('products'));
     }
 
     /**
@@ -61,7 +61,7 @@ class ReviewController extends Controller
     {
         $review = Review::findOrFail($id);
         $products = Product::all();
-        return view('review::edit', compact('review', 'products'));
+        return view('product::reviews.edit', compact('review', 'products'));
     }
 
     /**

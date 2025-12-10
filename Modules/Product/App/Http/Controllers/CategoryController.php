@@ -1,12 +1,12 @@
 <?php
 
-namespace Modules\Category\App\Http\Controllers;
+namespace Modules\Product\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Modules\Category\App\Models\Category;
+use Modules\Product\App\Models\Category;
 
 class CategoryController extends Controller
 {
@@ -16,7 +16,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::paginate(10);
-        return view('category::index', compact('categories'));
+        return view('product::categories.index', compact('categories'));
     }
 
     /**
@@ -24,7 +24,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return view('category::create');
+        return view('product::categories.create');
     }
 
     /**
@@ -54,7 +54,7 @@ class CategoryController extends Controller
     public function edit($id)
     {
         $category = Category::findOrFail($id);
-        return view('category::edit', compact('category'));
+        return view('product::categories.edit', compact('category'));
     }
 
     /**

@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\Category\Database\Seeders;
+namespace Modules\Product\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Modules\Category\App\Models\Category;
+use Modules\Product\App\Models\Category;
 
 class CategorySeeder extends Seeder
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Review\Database\Factories;
+namespace Modules\Product\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Product\App\Models\Product;
-use Modules\Review\App\Models\Review;
+use Modules\Product\App\Models\Review;
 
 class ReviewFactory extends Factory
 {

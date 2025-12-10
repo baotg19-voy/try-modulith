@@ -23,7 +23,7 @@ class ProductFactory extends Factory
             'name' => $name,
             'description' => fake()->paragraphs(1, true),
             'price' => fake()->randomFloat(2, 10, 1000),
-            'category_id' => \Modules\Category\App\Models\Category::inRandomOrder()->pluck('id')->first() ?? 1,
+            'category_id' => \Modules\Product\App\Models\Category::inRandomOrder()->pluck('id')->first() ?? 1,
         ];
     }
 }

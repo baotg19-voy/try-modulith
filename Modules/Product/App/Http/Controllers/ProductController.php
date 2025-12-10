@@ -5,9 +5,9 @@ namespace Modules\Product\App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Modules\Category\App\Models\Category;
+use Modules\Product\App\Models\Category;
 use Modules\Product\App\Models\Product;
-use Modules\Review\App\Models\Review;
+use Modules\Product\App\Models\Review;
 
 class ProductController extends Controller
 {

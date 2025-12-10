@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Review\App\Models;
+namespace Modules\Product\App\Models;
 
 use MongoDB\Laravel\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Product\App\Models\Product;
-use Modules\Review\Database\Factories\ReviewFactory;
+use Modules\Product\Database\Factories\ReviewFactory;
 
 class Review extends Model
 {

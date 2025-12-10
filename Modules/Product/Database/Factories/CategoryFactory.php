@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Category\Database\Factories;
+namespace Modules\Product\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -10,7 +10,7 @@ class CategoryFactory extends Factory
     /**
      * The name of the factory's corresponding model.
      */
-    protected $model = \Modules\Category\App\Models\Category::class;
+    protected $model = \Modules\Product\App\Models\Category::class;
 
     /**
      * Define the model's default state.
