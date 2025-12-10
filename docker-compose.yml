@@ -45,17 +45,34 @@ services:
         networks:
             - tame_network
 
-    # app:
-    #     image: php:8.3-fpm
-    #     container_name: tame_app
-    #     volumes:
-    #         - .:/var/www/html
-    #     networks:
-    #         - tame_network
-    #     depends_on:
-    #         - mysql
-    #         - postgres
-    #         - mongodb
+    app:
+        build: .
+        container_name: tame_app
+        restart: unless-stopped
+        volumes:
+            - .:/var/www/html
+        working_dir: /var/www/html
+        networks:
+            - tame_network
+        depends_on:
+            - mysql
+            - postgres
+            - mongodb
+
+    nginx:
+        image: nginx:alpine
+        container_name: tame_nginx
+        restart: unless-stopped
+        ports:
+            - "80:80"
+        volumes:
+            - .:/var/www/html
+            - ./nginx.conf:/etc/nginx/conf.d/default.conf
+        networks:
+            - tame_network
+        depends_on:
+            - app
+
 
 volumes:
     mysql_data:
