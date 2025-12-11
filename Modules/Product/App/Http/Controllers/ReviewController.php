@@ -5,24 +5,32 @@ namespace Modules\Product\App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Modules\Product\App\DTO\ReviewDTO;
+use Modules\Product\App\Http\Requests\ReviewRequest;
 use Modules\Product\App\Models\Product;
 use Modules\Product\App\Models\Review;
+use Modules\Product\App\Repositories\Product\ProductRepositoryInterface;
+use Modules\Product\App\Repositories\Review\ReviewRepositoryInterface;
+use Modules\Product\App\Services\ProductService;
+use Modules\Product\App\Services\ReviewService;
 
 class ReviewController extends Controller
 {
+    public function __construct(
+        protected ReviewService $reviewService,
+        protected ProductService $productService
+    ) {}
+    
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        // Get reviews from MongoDB with pagination
-        $reviews = Review::orderBy('created_at', 'desc')->paginate(10);
+        $reviews = $this->reviewService->getPaginatedReviews(10);
         
-        // Extract unique product IDs from reviews
         $productIds = $reviews->pluck('product_id')->unique()->toArray();
-        
-        // Fetch products from MySQL database
-        $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+        $products = $this->productService->getProductDictByIds($productIds);
         
         return view('product::reviews.index', compact('reviews', 'products'));
     }
@@ -32,27 +40,30 @@ class ReviewController extends Controller
      */
     public function create()
     {
-        $products = Product::all();
+        $products = $this->productService->getAllProducts();
         return view('product::reviews.create', compact('products'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(ReviewRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'author_name' => 'required|string|max:255',
-            'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'required|string|min:10',
-        ]);
+        $request->validated();
+        list($status, $message) = ['success', 'Review created successfully!'];
 
-        Review::create($validated);
+        try {
+            $reviewDto = ReviewDTO::fromRequest($request);
+            $this->reviewService->createReview($reviewDto);
+        } catch (\Throwable $th) {
+            Log::error("Error creating review: " . $th->getMessage());
+            list($status, $message) = ['error', 'Error creating review'];
+        }
 
         return redirect()->route('reviews.index')
-            ->with('success', 'Review created successfully!');
+            ->with($status, $message);
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -60,29 +71,29 @@ class ReviewController extends Controller
     public function edit($id)
     {
         $review = Review::findOrFail($id);
-        $products = Product::all();
+        $products = $this->productService->getAllProducts();
         return view('product::reviews.edit', compact('review', 'products'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id): RedirectResponse
+    public function update(ReviewRequest $request, $id): RedirectResponse
     {
         $review = Review::findOrFail($id);
 
-        $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'author_name' => 'required|string|max:255',
-            'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'required|string|min:10',
-        ]);
+        $request->validated();
+        list($status, $message) = ['success', 'Review updated successfully!'];
 
-        $review->update($validated);
+        $reviewDto = ReviewDTO::fromRequest($request);
+        $this->reviewService->updateReview($review->id, $reviewDto);
+        try {
+        } catch (\Throwable $th) {
+            Log::error("Error updating review: " . $th->getMessage());
+            list($status, $message) = ['error', 'Error updating review'];
+        }
 
         return redirect()->route('reviews.index')
-            ->with('success', 'Review updated successfully!');
+            ->with($status, $message);
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -90,9 +101,17 @@ class ReviewController extends Controller
     public function destroy($id): RedirectResponse
     {
         $review = Review::findOrFail($id);
-        $review->delete();
+        list($status, $message) = ['success', 'Review deleted successfully!'];
+
+        try {
+            $this->reviewService->deleteReview($review->id);
+        } catch (\Throwable $th) {
+            Log::error("Error deleting review: " . $th->getMessage());
+            list($status, $message) = ['error', 'Error deleting review'];
+        }
 
         return redirect()->route('reviews.index')
-            ->with('success', 'Review deleted successfully!');
+            ->with($status, $message);
     }
+
 }

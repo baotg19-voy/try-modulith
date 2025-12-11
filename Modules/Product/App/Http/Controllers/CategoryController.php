@@ -4,18 +4,24 @@ namespace Modules\Product\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+use Modules\Product\App\DTO\CategoryDTO;
+use Modules\Product\App\Http\Requests\CategoryRequest;
 use Modules\Product\App\Models\Category;
+use Modules\Product\App\Services\CategoryService;
 
 class CategoryController extends Controller
 {
+    public function __construct(
+        protected CategoryService $categoryService
+    ) {}
+    
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $categories = Category::paginate(10);
+        $categories = $this->categoryService->getPaginatedCategories(10);
         return view('product::categories.index', compact('categories'));
     }
 
@@ -30,22 +36,21 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(CategoryRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:pgsql.categories,name',
-            'slug' => 'nullable|string|max:255|unique:pgsql.categories,slug',
-        ]);
+        $validated = $request->validated();
+        list($status, $message) = ['success', 'Category created successfully!'];
 
-        // Auto-generate slug if not provided
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
+        try {
+            $categoryDto = new CategoryDTO(...$validated);
+            $this->categoryService->createCategory($categoryDto);
+        } catch (\Throwable $th) {
+            Log::error("Error creating category: " . $th->getMessage());
+            list($status, $message) = ['error', 'Error creating category'];
         }
 
-        Category::create($validated);
-
         return redirect()->route('categories.index')
-            ->with('success', 'Category created successfully!');
+            ->with($status, $message);
     }
 
     /**
@@ -60,24 +65,23 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id): RedirectResponse
+    public function update(CategoryRequest $request, $id): RedirectResponse
     {
         $category = Category::findOrFail($id);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:pgsql.categories,name,' . $id,
-            'slug' => 'nullable|string|max:255|unique:pgsql.categories,slug,' . $id,
-        ]);
+        $validated = $request->validated();
+        list($status, $message) = ['success', 'Category updated successfully!'];
 
-        // Auto-generate slug if not provided
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
+        try {
+            $categoryDto = new CategoryDTO(...$validated);
+            $this->categoryService->updateCategory($category->id, $categoryDto);
+        } catch (\Throwable $th) {
+            Log::error("Error updating category: " . $th->getMessage());
+            list($status, $message) = ['error', 'Error updating category'];
         }
 
-        $category->update($validated);
-
         return redirect()->route('categories.index')
-            ->with('success', 'Category updated successfully!');
+            ->with($status, $message);
     }
 
     /**
@@ -86,9 +90,16 @@ class CategoryController extends Controller
     public function destroy($id): RedirectResponse
     {
         $category = Category::findOrFail($id);
-        $category->delete();
+        list($status, $message) = ['success', 'Category deleting successfully!'];
+
+        try {
+            $this->categoryService->deleteCategory($category->id);
+        } catch (\Throwable $th) {
+            Log::error("Error deleting category: " . $th->getMessage());
+            list($status, $message) = ['error', 'Error deleting category'];
+        }
 
         return redirect()->route('categories.index')
-            ->with('success', 'Category deleted successfully!');
+            ->with($status, $message);
     }
 }

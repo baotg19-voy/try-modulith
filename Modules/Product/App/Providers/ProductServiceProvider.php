@@ -30,6 +30,21 @@ class ProductServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->register(RouteServiceProvider::class);
+
+        $this->app->singleton(
+            \Modules\Product\App\Repositories\Product\ProductRepositoryInterface::class,
+            \Modules\Product\App\Repositories\Product\ProductRepository::class
+        );
+
+        $this->app->singleton(
+            \Modules\Product\App\Repositories\Category\CategoryRepositoryInterface::class,
+            \Modules\Product\App\Repositories\Category\CategoryRepository::class
+        );
+
+        $this->app->singleton(
+            \Modules\Product\App\Repositories\Review\ReviewRepositoryInterface::class,
+            \Modules\Product\App\Repositories\Review\ReviewRepository::class
+        );
     }
 
     /**

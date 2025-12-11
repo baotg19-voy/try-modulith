@@ -4,19 +4,26 @@ namespace Modules\Product\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Modules\Product\App\Models\Category;
+use Illuminate\Support\Facades\Log;
+use Modules\Product\App\DTO\ProductDTO;
+use Modules\Product\App\Http\Requests\ProductRequest;
 use Modules\Product\App\Models\Product;
-use Modules\Product\App\Models\Review;
+use Modules\Product\App\Services\CategoryService;
+use Modules\Product\App\Services\ProductService;
 
 class ProductController extends Controller
 {
+    public function __construct(
+        protected ProductService $productService,
+        protected CategoryService $categoryService
+    ) {}
+    
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $products = Product::with('category')->paginate(10);
+        $products = $this->productService->getPaginatedProducts(10);
         return view('product::index', compact('products'));
     }
 
@@ -25,27 +32,30 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
+        $categories = $this->categoryService->getAllCategories();
         return view('product::create', compact('categories'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(ProductRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'category_id' => 'required|exists:pgsql.categories,id',
-        ]);
+        $request->validated();
+        list($status, $message) = ['success', 'Product created successfully!'];
 
-        Product::create($validated);
+        try {
+            $productDto = ProductDTO::fromRequest($request);
+            $this->productService->createProduct($productDto);
+        } catch (\Throwable $th) {
+            Log::error("Error creating product: " . $th->getMessage());
+            list($status, $message) = ['error', 'Error creating product'];
+        }
 
         return redirect()->route('products.index')
-            ->with('success', 'Product created successfully!');
+            ->with($status, $message);
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -53,29 +63,32 @@ class ProductController extends Controller
     public function edit($id)
     {
         $product = Product::findOrFail($id);
-        $categories = Category::all();
+        $categories = $this->categoryService->getAllCategories();
         return view('product::edit', compact('product', 'categories'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id): RedirectResponse
+    public function update(ProductRequest $request, $id): RedirectResponse
     {
         $product = Product::findOrFail($id);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'category_id' => 'required|exists:pgsql.categories,id',
-        ]);
+        $request->validated();
+        list($status, $message) = ['success', 'Product updated successfully!'];
 
-        $product->update($validated);
+        try {
+            $productDto = ProductDTO::fromRequest($request);
+            $this->productService->updateProduct($product->id, $productDto);
+        } catch (\Throwable $th) {
+            Log::error("Error updating product: " . $th->getMessage());
+            list($status, $message) = ['error', 'Error updating product'];
+        }
 
         return redirect()->route('products.index')
-            ->with('success', 'Product updated successfully!');
+            ->with($status, $message);
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -83,10 +96,17 @@ class ProductController extends Controller
     public function destroy($id): RedirectResponse
     {
         $product = Product::findOrFail($id);
-        Review::where('product_id', $product->id)->delete();
-        $product->delete();
+        list($status, $message) = ['success', 'Product deleted successfully!'];
+
+        try {
+            $this->productService->deleteProduct($product->id);
+        } catch (\Throwable $th) {
+            Log::error("Error deleting product: " . $th->getMessage());
+            list($status, $message) = ['error', 'Error deleting product'];
+        }
 
         return redirect()->route('products.index')
-            ->with('success', 'Product deleted successfully!');
+            ->with($status, $message);
     }
+
 }
