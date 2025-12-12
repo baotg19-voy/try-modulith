@@ -1,10 +1,12 @@
 <?php
+
 namespace Modules\Product\App\Services;
 
 use Modules\Product\App\DTO\CategoryDTO;
 use Modules\Product\App\Repositories\Category\CategoryRepositoryInterface;
 
-class CategoryService {
+class CategoryService
+{
     public function __construct(private CategoryRepositoryInterface $categoryRepository)
     {
     }

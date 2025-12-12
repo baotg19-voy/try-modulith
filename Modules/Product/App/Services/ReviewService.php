@@ -1,10 +1,12 @@
 <?php
+
 namespace Modules\Product\App\Services;
 
 use Modules\Product\App\DTO\ReviewDTO;
 use Modules\Product\App\Repositories\Review\ReviewRepositoryInterface;
 
-class ReviewService {
+class ReviewService
+{
     public function __construct(private ReviewRepositoryInterface $reviewRepository)
     {
     }

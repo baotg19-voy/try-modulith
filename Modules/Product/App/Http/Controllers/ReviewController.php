@@ -20,18 +20,19 @@ class ReviewController extends Controller
     public function __construct(
         protected ReviewService $reviewService,
         protected ProductService $productService
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $reviews = $this->reviewService->getPaginatedReviews(10);
-        
+
         $productIds = $reviews->pluck('product_id')->unique()->toArray();
         $products = $this->productService->getProductDictByIds($productIds);
-        
+
         return view('product::reviews.index', compact('reviews', 'products'));
     }
 
@@ -82,9 +83,9 @@ class ReviewController extends Controller
         $request->validated();
         list($status, $message) = ['success', 'Review updated successfully!'];
 
-        $reviewDto = ReviewDTO::fromRequest($request);
-        $this->reviewService->updateReview($review->id, $reviewDto);
         try {
+            $reviewDto = ReviewDTO::fromRequest($request);
+            $this->reviewService->updateReview($review->id, $reviewDto);
         } catch (\Throwable $th) {
             Log::error("Error updating review: " . $th->getMessage());
             list($status, $message) = ['error', 'Error updating review'];
@@ -113,5 +114,4 @@ class ReviewController extends Controller
         return redirect()->route('reviews.index')
             ->with($status, $message);
     }
-
 }

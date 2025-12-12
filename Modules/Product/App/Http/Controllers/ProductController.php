@@ -16,8 +16,9 @@ class ProductController extends Controller
     public function __construct(
         protected ProductService $productService,
         protected CategoryService $categoryService
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -108,5 +109,4 @@ class ProductController extends Controller
         return redirect()->route('products.index')
             ->with($status, $message);
     }
-
 }

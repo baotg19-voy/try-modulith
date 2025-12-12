@@ -28,5 +28,3 @@ Route::group([], function () {
         ->names('reviews')->except('show', 'delete');
     Route::get('reviews/{category}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 });
-
-

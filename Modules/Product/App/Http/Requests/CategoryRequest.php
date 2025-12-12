@@ -14,14 +14,14 @@ class CategoryRequest extends FormRequest
             'slug' => $this->slug ?: Str::slug($this->name)
         ]);
     }
-    
+
     /**
      * Get the validation rules that apply to the request.
      */
     public function rules(): array
     {
         $id = $this->route('category'); // null for store, ID for update
-        
+
         return [
             'name' => [
                 'required',

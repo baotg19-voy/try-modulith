@@ -5,7 +5,6 @@ namespace Modules\Core\App\Repositories;
 use Modules\Core\App\DTO\BaseDTO;
 use Modules\Core\App\Repositories\RepositoryInterface;
 
-
 abstract class BaseRepository implements RepositoryInterface
 {
     //model muốn tương tác
@@ -80,7 +79,7 @@ abstract class BaseRepository implements RepositoryInterface
         if (empty($ids)) {
             return collect();
         }
-        
+
         return $this->model
             ->whereIn('id', $ids)
             ->get();

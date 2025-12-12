@@ -1,26 +1,31 @@
 <?php
+
 namespace Modules\Product\App\Services;
 
 use Modules\Product\App\DTO\ProductDTO;
 use Modules\Product\App\Repositories\Product\ProductRepositoryInterface;
 use Modules\Product\App\Repositories\Review\ReviewRepositoryInterface;
 
-class ProductService {
+class ProductService
+{
     public function __construct(
         private ProductRepositoryInterface $productRepository,
         private ReviewRepositoryInterface $reviewRepository,
-    ) {}
+    ) {
+    }
 
     public function getPaginatedProducts($perPage = 10)
     {
         return $this->productRepository->getPaginated($perPage);
     }
 
-    public function getAllProducts(){
+    public function getAllProducts()
+    {
         return $this->productRepository->getAll();
     }
 
-    public function getProductDictByIds(array $productIds){
+    public function getProductDictByIds(array $productIds)
+    {
         return $this->productRepository
             ->getByIds($productIds)
             ->keyBy('id');

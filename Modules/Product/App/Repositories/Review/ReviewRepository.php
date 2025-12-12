@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\Product\App\Repositories\Review;
 
 use Modules\Core\App\DTO\BaseDTO;
@@ -17,7 +18,7 @@ class ReviewRepository extends BaseRepository implements ReviewRepositoryInterfa
     {
         /** @var ReviewDTO $reviewDto */
         $reviewDto = $dto;
-        
+
         $reviewData = [
             'author_name' => $reviewDto->authorName,
             'product_id' => $reviewDto->productId,
@@ -32,7 +33,7 @@ class ReviewRepository extends BaseRepository implements ReviewRepositoryInterfa
     {
         /** @var ReviewDTO $reviewDto */
         $reviewDto = $dto;
-        
+
         $reviewData = [
             'author_name' => $reviewDto->authorName,
             'product_id' => $reviewDto->productId,
@@ -48,13 +49,13 @@ class ReviewRepository extends BaseRepository implements ReviewRepositoryInterfa
 
         return false;
     }
-    
+
     public function getPaginated(int $perPage)
     {
         return $this->model->orderBy('created_at', 'desc')->paginate($perPage);
     }
 
-    public function deleteByProductId(string $productId)
+    public function deleteByProductId(int $productId)
     {
         return $this->model->whereProductId($productId)->delete();
     }

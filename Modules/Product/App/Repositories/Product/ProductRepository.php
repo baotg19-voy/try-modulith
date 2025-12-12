@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\Product\App\Repositories\Product;
 
 use Illuminate\Support\Collection;
@@ -6,7 +7,7 @@ use Modules\Core\App\DTO\BaseDTO;
 use Modules\Core\App\Repositories\BaseRepository;
 use Modules\Product\App\DTO\ProductDTO;
 
-class ProductRepository extends BaseRepository implements ProductRepositoryInterface 
+class ProductRepository extends BaseRepository implements ProductRepositoryInterface
 {
     public function getModel()
     {
@@ -22,7 +23,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
     {
         /** @var ProductDTO $productDto */
         $productDto = $dto;
-        
+
         $productData = [
             'name' => $productDto->name,
             'description' => $productDto->description,
@@ -37,7 +38,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
     {
         /** @var ProductDTO $productDto */
         $productDto = $dto;
-        
+
         $productData = [
             'name' => $productDto->name,
             'description' => $productDto->description,

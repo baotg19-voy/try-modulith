@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\Core\App\Repositories;
 
 use Modules\Core\App\DTO\BaseDTO;
@@ -28,7 +29,7 @@ interface RepositoryInterface
     /**
      * Update
      * @param $id
-     * @param array $attributes
+     * @param BaseDTO $dto
      * @return mixed
      */
     public function update($id, BaseDTO $dto);
